@@ -1,0 +1,160 @@
+.finance-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card h3 {
+  margin: 0 0 12px 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-card .amount {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.summary-card.income .amount {
+  color: #10b981;
+}
+
+.summary-card.expense .amount {
+  color: #ef4444;
+}
+
+.summary-card.balance .amount {
+  color: #6366f1;
+}
+
+.transactions-list {
+  display: grid;
+  gap: 16px;
+}
+
+.transaction-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid;
+}
+
+.transaction-card.income {
+  border-left-color: #10b981;
+}
+
+.transaction-card.expense {
+  border-left-color: #ef4444;
+}
+
+.transaction-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.transaction-info {
+  flex: 1;
+}
+
+.transaction-description {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  color: #1e293b;
+}
+
+.transaction-category {
+  display: inline-block;
+  background: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #64748b;
+  margin-right: 12px;
+}
+
+.transaction-date {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.transaction-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.transaction-card.income .transaction-amount {
+  color: #10b981;
+}
+
+.transaction-card.expense .transaction-amount {
+  color: #ef4444;
+}
+
+.receipt-preview {
+  margin: 12px 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.receipt-preview img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.receipt-preview img:hover {
+  transform: scale(1.02);
+}
+
+.transaction-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.checkbox-group span {
+  font-weight: 500;
+}

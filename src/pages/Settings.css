@@ -1,0 +1,77 @@
+.settings-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.settings-page h2 {
+  font-size: 1.75rem;
+  color: #1e293b;
+  margin-bottom: 32px;
+}
+
+.settings-section {
+  margin-bottom: 32px;
+}
+
+.settings-section h3 {
+  font-size: 1.2rem;
+  color: #334155;
+  margin-bottom: 16px;
+}
+
+.info-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #64748b;
+}
+
+.info-value {
+  color: #1e293b;
+  word-break: break-all;
+}
+
+.info-card p {
+  margin: 8px 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.logout-button-settings {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logout-button-settings:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.logout-button-settings:active {
+  transform: translateY(0);
+}

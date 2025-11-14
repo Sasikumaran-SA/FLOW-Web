@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, deleteDoc, doc, setDoc, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { Task } from '../types';
 import './Tasks.css';
@@ -65,6 +65,7 @@ export default function Tasks() {
     try {
       if (editingTask) {
         await updateDoc(doc(db, `users/${auth.currentUser.uid}/tasks`, editingTask.id), {
+          id: editingTask.id,
           userId: auth.currentUser.uid,
           title,
           description: null,
@@ -74,16 +75,18 @@ export default function Tasks() {
         });
         console.log('Task updated successfully');
       } else {
-        const newTask = await addDoc(collection(db, `users/${auth.currentUser.uid}/tasks`), {
+        const newTaskRef = doc(collection(db, `users/${auth.currentUser.uid}/tasks`));
+        await setDoc(newTaskRef, {
+          id: newTaskRef.id,
           userId: auth.currentUser.uid,
           title,
           description: null,
           deadline: deadline ? new Date(deadline).getTime() : null,
           priority,
           listName,
-          isCompleted: false,
+          completed: false,
         });
-        console.log('Task created successfully:', newTask.id);
+        console.log('Task created successfully:', newTaskRef.id);
       }
       resetForm();
     } catch (error) {
@@ -96,7 +99,7 @@ export default function Tasks() {
     try {
       if (!auth.currentUser) return;
       await updateDoc(doc(db, `users/${auth.currentUser.uid}/tasks`, task.id), {
-        isCompleted: !task.isCompleted,
+        completed: !task.completed,
       });
     } catch (error) {
       console.error('Error toggling task:', error);
@@ -173,11 +176,11 @@ export default function Tasks() {
 
       <div className="tasks-list">
         {filteredTasks.map(task => (
-          <div key={task.id} className={task.isCompleted ? 'task-card completed' : 'task-card'}>
+          <div key={task.id} className={task.completed ? 'task-card completed' : 'task-card'}>
             <div className="task-header">
               <input
                 type="checkbox"
-                checked={task.isCompleted}
+                checked={task.completed}
                 onChange={() => toggleComplete(task)}
                 className="task-checkbox"
               />

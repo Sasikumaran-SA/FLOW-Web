@@ -6,7 +6,7 @@ export interface Task {
   deadline?: number;
   priority: number;
   listName: string;
-  isCompleted: boolean;
+  completed: boolean;
 }
 
 export interface Note {
@@ -14,7 +14,7 @@ export interface Note {
   userId: string;
   title: string;
   content: string;
-  isLocked: boolean;
+  locked: boolean;
   passwordHash?: string;
   lastModified: number;
 }

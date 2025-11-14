@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, deleteDoc, doc, setDoc, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { Transaction } from '../types';
 import './Finance.css';
@@ -64,6 +64,7 @@ export default function Finance() {
     try {
       if (editingTransaction) {
         await updateDoc(doc(db, `users/${auth.currentUser.uid}/transactions`, editingTransaction.id), {
+          id: editingTransaction.id,
           userId: auth.currentUser.uid,
           description,
           amount: parseFloat(amount),
@@ -73,7 +74,9 @@ export default function Finance() {
           receiptImageUrl: null,
         });
       } else {
-        await addDoc(collection(db, `users/${auth.currentUser.uid}/transactions`), {
+        const newTransactionRef = doc(collection(db, `users/${auth.currentUser.uid}/transactions`));
+        await setDoc(newTransactionRef, {
+          id: newTransactionRef.id,
           userId: auth.currentUser.uid,
           description,
           amount: parseFloat(amount),

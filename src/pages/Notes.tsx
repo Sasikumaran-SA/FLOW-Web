@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, deleteDoc, doc, setDoc, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { Note } from '../types';
 import './Notes.css';
@@ -14,6 +14,27 @@ export default function Notes() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [unlockedNotes, setUnlockedNotes] = useState<Set<string>>(new Set());
+
+  // Simple XOR encryption function
+  const encryptContent = (content: string, key: string): string => {
+    let result = '';
+    for (let i = 0; i < content.length; i++) {
+      const charCode = content.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+      result += String.fromCharCode(charCode);
+    }
+    return btoa(result);
+  };
+
+  // Simple XOR decryption function
+  const decryptContent = (encryptedContent: string, key: string): string => {
+    const decoded = atob(encryptedContent);
+    let result = '';
+    for (let i = 0; i < decoded.length; i++) {
+      const charCode = decoded.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+      result += String.fromCharCode(charCode);
+    }
+    return result;
+  };
 
   useEffect(() => {
     if (!auth.currentUser) return;
@@ -68,18 +89,26 @@ export default function Notes() {
         userId: auth.currentUser.uid,
         title,
         content,
-        isLocked,
+        locked: isLocked,
         lastModified: Date.now(),
       };
 
       if (isLocked && password) {
         noteData.passwordHash = btoa(password); // Simple encoding (in production, use proper hashing)
+        // Encrypt the content before saving
+        noteData.content = encryptContent(content, password);
+      } else if (!isLocked) {
+        // If note is not locked, ensure content is not encrypted
+        noteData.content = content;
       }
 
       if (editingNote) {
+        noteData.id = editingNote.id;
         await updateDoc(doc(db, `users/${auth.currentUser.uid}/notes`, editingNote.id), noteData);
       } else {
-        await addDoc(collection(db, `users/${auth.currentUser.uid}/notes`), noteData);
+        const newNoteRef = doc(collection(db, `users/${auth.currentUser.uid}/notes`));
+        noteData.id = newNoteRef.id;
+        await setDoc(newNoteRef, noteData);
       }
       resetForm();
     } catch (error) {
@@ -106,31 +135,57 @@ export default function Notes() {
   };
 
   const startEdit = (note: Note) => {
-    if (note.isLocked && !unlockedNotes.has(note.id)) {
+    if (note.locked && !unlockedNotes.has(note.id)) {
       const inputPassword = prompt('Enter note password:');
       if (!inputPassword || btoa(inputPassword) !== note.passwordHash) {
         alert('Incorrect password!');
         return;
       }
-      setUnlockedNotes(prev => new Set(prev).add(note.id));
+      // Try to decrypt the content
+      try {
+        const decryptedContent = decryptContent(note.content, inputPassword);
+        setUnlockedNotes(prev => new Set(prev).add(note.id));
+        setEditingNote(note);
+        setTitle(note.title);
+        setContent(decryptedContent);
+        setIsLocked(note.locked);
+        setPassword('');
+        setShowModal(true);
+      } catch (e) {
+        alert('Failed to decrypt note. Incorrect password or corrupted data.');
+        return;
+      }
+    } else {
+      // Note is not locked or already unlocked
+      setEditingNote(note);
+      setTitle(note.title);
+      setContent(note.content);
+      setIsLocked(note.locked);
+      setPassword('');
+      setShowModal(true);
     }
-
-    setEditingNote(note);
-    setTitle(note.title);
-    setContent(note.content);
-    setIsLocked(note.isLocked);
-    setPassword('');
-    setShowModal(true);
   };
 
   const viewNote = (note: Note) => {
-    if (note.isLocked && !unlockedNotes.has(note.id)) {
+    if (note.locked && !unlockedNotes.has(note.id)) {
       const inputPassword = prompt('Enter note password:');
       if (!inputPassword || btoa(inputPassword) !== note.passwordHash) {
         alert('Incorrect password!');
         return;
       }
-      setUnlockedNotes(prev => new Set(prev).add(note.id));
+      // Try to decrypt the content
+      try {
+        const decryptedContent = decryptContent(note.content, inputPassword);
+        setUnlockedNotes(prev => new Set(prev).add(note.id));
+        // Update the note with decrypted content for display
+        const updatedNotes = notes.map(n => 
+          n.id === note.id ? {...n, content: decryptedContent} : n
+        );
+        setNotes(updatedNotes);
+      } catch (e) {
+        alert('Failed to decrypt note. Incorrect password or corrupted data.');
+        return;
+      }
     }
   };
 
@@ -145,7 +200,7 @@ export default function Notes() {
   };
 
   const isNoteUnlocked = (note: Note) => {
-    return !note.isLocked || unlockedNotes.has(note.id);
+    return !note.locked || unlockedNotes.has(note.id);
   };
 
   return (
@@ -164,7 +219,7 @@ export default function Notes() {
           >
             <div className="note-header">
               <h3 className="note-title">
-                {note.isLocked && <span className="lock-icon">🔒</span>}
+                {note.locked && <span className="lock-icon">🔒</span>}
                 {note.title}
               </h3>
               <span className="note-date">

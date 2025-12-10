@@ -141,11 +141,11 @@ export default function Finance() {
       <div className="summary-cards">
         <div className="summary-card income">
           <h3>Income</h3>
-          <p className="amount">${totalIncome.toFixed(2)}</p>
+          <p className="amount">₹{totalIncome.toFixed(2)}</p>
         </div>
         <div className="summary-card expense">
           <h3>Expense</h3>
-          <p className="amount">${totalExpense.toFixed(2)}</p>
+          <p className="amount">₹{totalExpense.toFixed(2)}</p>
         </div>
       </div>
 
@@ -160,7 +160,7 @@ export default function Finance() {
                 </span>
               </div>
               <div className="transaction-amount">
-                {transaction.isIncome ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
+                {transaction.isIncome ? '+' : '-'}₹{Math.abs(transaction.amount).toFixed(2)}
               </div>
             </div>
 

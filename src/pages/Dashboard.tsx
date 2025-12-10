@@ -30,7 +30,7 @@ export default function Dashboard() {
           <span className="nav-label">Tasks</span>
         </NavLink>
         <NavLink to="/dashboard/finance" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-          <span className="nav-icon">$</span>
+          <span className="nav-icon">₹</span>
           <span className="nav-label">Finance</span>
         </NavLink>
         <NavLink to="/dashboard/notes" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>

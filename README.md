@@ -44,7 +44,3 @@ npm run build
 - Vite
 - Firebase (Auth, Firestore, Storage)
 - React Router DOM
-
-## License
-
-MIT
